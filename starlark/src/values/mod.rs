@@ -175,9 +175,9 @@ impl<T: Into<RuntimeError>> SyntaxError for T {
     }
 }
 
-impl Into<ValueError> for RuntimeError {
-    fn into(self) -> ValueError {
-        ValueError::Runtime(self)
+impl From<RuntimeError> for ValueError {
+    fn from(e: RuntimeError) -> ValueError {
+        ValueError::Runtime(e)
     }
 }
 

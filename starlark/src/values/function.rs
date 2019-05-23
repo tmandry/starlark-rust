@@ -71,17 +71,17 @@ pub enum FunctionError {
     ExtraParameter,
 }
 
-impl Into<RuntimeError> for FunctionError {
-    fn into(self) -> RuntimeError {
+impl From<FunctionError> for RuntimeError {
+    fn from(err: FunctionError) -> RuntimeError {
         RuntimeError {
-            code: match self {
+            code: match err {
                 FunctionError::NotEnoughParameter { .. } => NOT_ENOUGH_PARAMS_ERROR_CODE,
                 FunctionError::ArgsValueIsNotString => WRONG_ARGS_IDENT_ERROR_CODE,
                 FunctionError::ArgsArrayIsNotIterable => ARGS_NOT_ITERABLE_ERROR_CODE,
                 FunctionError::KWArgsDictIsNotMappable => KWARGS_NOT_MAPPABLE_ERROR_CODE,
                 FunctionError::ExtraParameter => EXTRA_PARAMETER_ERROR_CODE,
             },
-            label: match self {
+            label: match err {
                 FunctionError::NotEnoughParameter { .. } => {
                     "Not enough parameters in function call".to_owned()
                 }
@@ -90,7 +90,7 @@ impl Into<RuntimeError> for FunctionError {
                 FunctionError::KWArgsDictIsNotMappable => "**kwargs is not mappable".to_owned(),
                 FunctionError::ExtraParameter => "Extraneous parameter in function call".to_owned(),
             },
-            message: match self {
+            message: match err {
                 FunctionError::NotEnoughParameter {
                     missing,
                     function_type,
@@ -117,9 +117,9 @@ impl Into<RuntimeError> for FunctionError {
     }
 }
 
-impl Into<ValueError> for FunctionError {
-    fn into(self) -> ValueError {
-        ValueError::Runtime(self.into())
+impl From<FunctionError> for ValueError {
+    fn from(e: FunctionError) -> Self {
+        ValueError::Runtime(e.into())
     }
 }
 

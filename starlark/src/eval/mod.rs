@@ -92,9 +92,9 @@ macro_rules! t {
     }};
 }
 
-impl Into<Diagnostic> for EvalException {
-    fn into(self) -> Diagnostic {
-        match self {
+impl From<EvalException> for Diagnostic {
+    fn from(exc: EvalException) -> Diagnostic {
+        match exc {
             EvalException::DiagnosedError(e) => e,
             EvalException::Break(s) => Diagnostic {
                 level: Level::Error,

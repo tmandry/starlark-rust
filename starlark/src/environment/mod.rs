@@ -39,15 +39,15 @@ pub enum EnvironmentError {
     CannotImportPrivateSymbol(String),
 }
 
-impl Into<RuntimeError> for EnvironmentError {
-    fn into(self) -> RuntimeError {
+impl From<EnvironmentError> for RuntimeError {
+    fn from(err: EnvironmentError) -> RuntimeError {
         RuntimeError {
-            code: match self {
+            code: match err {
                 EnvironmentError::TryingToMutateFrozenEnvironment => FROZEN_ENV_ERROR_CODE,
                 EnvironmentError::VariableNotFound(..) => NOT_FOUND_ERROR_CODE,
                 EnvironmentError::CannotImportPrivateSymbol(..) => CANNOT_IMPORT_ERROR_CODE,
             },
-            label: match self {
+            label: match err {
                 EnvironmentError::TryingToMutateFrozenEnvironment => {
                     "This value belong to a frozen environment".to_owned()
                 }
@@ -56,7 +56,7 @@ impl Into<RuntimeError> for EnvironmentError {
                     format!("Symbol '{}' is private", s)
                 }
             },
-            message: match self {
+            message: match err {
                 EnvironmentError::TryingToMutateFrozenEnvironment => {
                     "Cannot mutate a frozen environment".to_owned()
                 }
@@ -69,9 +69,9 @@ impl Into<RuntimeError> for EnvironmentError {
     }
 }
 
-impl Into<ValueError> for EnvironmentError {
-    fn into(self) -> ValueError {
-        ValueError::Runtime(self.into())
+impl From<EnvironmentError> for ValueError {
+    fn from(e: EnvironmentError) -> Self {
+        ValueError::Runtime(e.into())
     }
 }
 

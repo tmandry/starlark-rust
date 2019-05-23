@@ -804,20 +804,16 @@ starlark_module! {global =>
     /// ```
     string.join(this, #to_join) {
         let this = this.to_str();
-        ok!(
-            to_join.into_iter()?.fold(
-                Ok(String::new()),
-                |a, x| {
-                    check_string!(x, join);
-                    let a = a.unwrap();
-                    if a.is_empty() {
-                        Ok(x.to_str())
-                    } else {
-                        Ok(format!("{}{}{}", a, this, x.to_str()))
-                    }
-                }
-            )?
-        );
+        let mut r = String::new();
+        for (index, item) in to_join.into_iter()?.enumerate() {
+            if index != 0 {
+                r.push_str(&this);
+            }
+            check_string!(item, join);
+            let item = item.to_str();
+            r.push_str(&*item);
+        }
+        ok!(r)
     }
 
     /// [string.lower](
